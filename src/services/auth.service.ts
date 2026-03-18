@@ -1,0 +1,123 @@
+import bcrypt from "bcrypt";
+import { User } from "../models/users.model";
+import { generateRefreshToken } from "../utils/generaterefreshtoken";
+import { generateAccessToken } from "../utils/generateaccesstoken";
+import { ApiError } from "../utils/api.error";
+
+export const createUserService = async (
+  name: string,
+  email: string,
+  password: string,
+  role: string,
+) => {
+  const existingUser = await User.findOne({ email });
+
+  if (existingUser) {
+    throw new ApiError(404,"user already existed");
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const newUser = await User.create({
+    name,
+
+    email,
+    password: hashedPassword,
+    role,
+  });
+  const userObject = newUser.toObject();
+  delete userObject.password;
+
+  return userObject;
+};
+
+export const userSigninServices = async (email: string, password: string) => {
+  const existing_user = await User.findOne({ email });
+
+  if (!existing_user) {
+    throw new ApiError(404,"invalid email and password");
+  }
+  const isUserMatch = await bcrypt.compare(password, existing_user.password);
+
+  if (!isUserMatch) {
+    throw new ApiError(404,"invalid email and password");
+  }
+
+  const payload = {
+    email: existing_user.email,
+    role: existing_user.role,
+    id: existing_user.id,
+  };
+
+  const accessToken = generateAccessToken(payload);
+  const refreshToken = generateRefreshToken(payload);
+
+  const userObject = existing_user.toObject();
+  delete userObject.password;
+
+  return {
+    user: userObject,
+    accessToken,
+    refreshToken,
+  };
+};
+
+export const userUpdateService = async (
+  email: string,
+  update: {
+    name?: string;
+    email?: string;
+    phoneNumber?: number;
+    role?: "user" | "admin" | "manager";
+    password?: string;
+  },
+) => {
+  const userFind = await User.findOne({ email });
+
+  if (!userFind) {
+    throw new ApiError(404,"email does not exist");
+  }
+
+  const userUpdate = await User.findOneAndUpdate({ email }, update);
+  const updateData = userUpdate.toObject();
+  delete updateData.password;
+
+  return updateData;
+};
+
+export const userDeleteServices = async (email : string)=>{
+  
+  const findUser = await User.findOne({email})
+
+  if(!findUser){
+    throw new ApiError(404, 'email does not exist')
+  }
+
+  const deleteUser = await User.findOneAndDelete({email});
+  return deleteUser;
+}
+
+
+export const resetPasswordService = async (email : string, newpassword : string)=>{
+  const findUser = await User.findOne({email});
+
+  if(!findUser){
+    throw new ApiError (404, 'user does not exists');
+  }
+
+  const hashedPassword = await bcrypt.hash(newpassword, 10);
+
+  const updateUser = await User.findOneAndUpdate(
+    {email},
+    {password : hashedPassword},
+  );
+
+  if (!updateUser) {
+    throw new ApiError(404,"user does not exists");
+  }
+
+  const userObject = updateUser.toObject();
+  delete userObject.password;
+
+  return userObject;
+
+}
