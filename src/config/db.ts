@@ -5,15 +5,14 @@ export const connectDB = async() =>{
     try{
 
     if(!mongoUri){
-        throw new Error ('MONGOURI is not defined');
+        throw new Error ('MONGO_URI is not defined');
     }
     await mongoose.connect(mongoUri);
     console.log('database connected successfully')
 
     }
 
-    catch(err){
-        console.log(`database has been not connected, ${err}`);
+    catch{
+        console.error('database has been not connected');
     }
-
 }

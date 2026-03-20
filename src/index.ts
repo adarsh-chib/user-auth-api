@@ -8,6 +8,7 @@ import {
 import router from "./routes/auth.routes";
 import cors from "cors";
 import { errorHandler } from "./middleware/error.handler";
+import profileRouter from "./routes/profile.routes";
 
 const app = express();
 const corsOptions = {
@@ -25,6 +26,7 @@ app.use(requestLoggger);
 
 
 app.use("/api", router);
+app.use("/api",profileRouter);
 app.use(errorHandler);
 
 const server = async () => {
