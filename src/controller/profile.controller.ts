@@ -37,7 +37,7 @@ export const createProfile = async (
 };
 
 export const getProfile = async (
-  req: Request,
+  req: Request<{ userId: string }>,
   res: Response,
   next: NextFunction,
 ) => {
@@ -46,7 +46,8 @@ export const getProfile = async (
   }
 
   try {
-    const profile = await getProfileServices(req.user.id);
+    const targetUserId = req.params.userId ?? req.user.id;
+    const profile = await getProfileServices(targetUserId);
     return res
       .status(200)
       .json(new ApiResponse(200, "profile fetched successfully", profile));
@@ -56,7 +57,7 @@ export const getProfile = async (
 };
 
 export const profileUpdate = async (
-  req: Request,
+  req: Request<{ userId: string }>,
   res: Response,
   next: NextFunction,
 ) => {
@@ -66,7 +67,8 @@ export const profileUpdate = async (
   }
 
   try {
-    const updateData = await updateProfileServices(req.user.id, {
+    const targetUserId = req.params.userId ?? req.user.id;
+    const updateData = await updateProfileServices(targetUserId, {
       bio,
       phoneNumber,
       address,
@@ -76,14 +78,14 @@ export const profileUpdate = async (
 
     return res
       .status(200)
-      .json(new ApiResponse(201, "profile updated successfully", updateData));
+      .json(new ApiResponse(200, "profile updated successfully", updateData));
   } catch (err) {
     next(err);
   }
 };
 
 export const profileDelete = async (
-  req: Request,
+  req: Request<{ userId: string }>,
   res: Response,
   next: NextFunction,
 ) => {
@@ -92,7 +94,8 @@ export const profileDelete = async (
   }
 
   try {
-    const profile = await deleteProfileServices(req.user.id);
+    const targetUserId = req.params.userId ?? req.user.id;
+    const profile = await deleteProfileServices(targetUserId);
     return res
       .status(200)
       .json(new ApiResponse(200, "profile deleted successfully", profile));

@@ -1,4 +1,3 @@
-import { after } from "node:test";
 import { UserProfile } from "../models/profile.model";
 import { ApiError } from "../utils/api.error";
 
@@ -33,7 +32,7 @@ export const getProfileServices = async (userId: string) => {
   const userProfile = await UserProfile.findOne({ userId });
 
   if (!userProfile) {
-    throw new ApiError(404, "user not found");
+    throw new ApiError(404, "profile not found");
   }
 
   return userProfile;
@@ -46,7 +45,7 @@ export const updateProfileServices = async (
   const userUpdate = await UserProfile.findOne({ userId });
 
   if (!userUpdate) {
-    throw new ApiError(404, "user not found");
+    throw new ApiError(404, "profile not found");
   }
 
   const userProfileUpdate = await UserProfile.findOneAndUpdate(
@@ -56,7 +55,7 @@ export const updateProfileServices = async (
   );
 
   if (!userProfileUpdate) {
-    throw new ApiError(404, "user not found");
+    throw new ApiError(404, "profile not found");
   }
   
 
@@ -65,7 +64,7 @@ export const updateProfileServices = async (
 
 
 
-export const deleteProfileServices = async (userId : String)=>{
+export const deleteProfileServices = async (userId: string) => {
   const userFind = await UserProfile.findOne({userId});
 
   if(!userFind){

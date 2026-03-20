@@ -4,8 +4,9 @@ import { JWT_ACCESS_SECRET } from "../config/jwt";
 import jwt from "jsonwebtoken";
 import type { IUserPayload } from "../types/express";
 
+type UserRole = "user" | "admin" | "manager";
 
-export const authMiddleware = (
+export const authenticationMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -30,16 +31,71 @@ export const authMiddleware = (
   }
 };
 
-export const authorizesRoles = (...roles: ("user" | "admin" | "manager")[]) => {
+
+export const authorizationMiddleware = (
+  ...allowedRoles: UserRole[]
+) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
-      return next(new ApiError(401, "unauthorized user"));
+      return next(new ApiError(401, "unauthorized"));
     }
 
-    if (!roles.includes(req.user.role)) {
-      return next(new ApiError(403, "forbidden"));
+    if (!allowedRoles.includes(req.user.role)) {
+      return next(new ApiError(403, "forbidden: access denied"));
     }
 
     next();
   };
+};
+
+export const adminOrOwnerByEmailMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (!req.user) {
+    return next(new ApiError(401, "unauthorized"));
+  }
+
+  const targetEmail = req.params.email;
+
+  if (!targetEmail) {
+    return next(new ApiError(400, "target email is required"));
+  }
+
+  if (
+    req.user.role === "admin" ||
+    req.user.role === "manager" ||
+    req.user.email === targetEmail
+  ) {
+    return next();
+  }
+
+  return next(new ApiError(403, "you can only access your own data"));
+};
+
+export const adminOrOwnerByUserIdMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (!req.user) {
+    return next(new ApiError(401, "unauthorized"));
+  }
+
+  const targetUserId = req.params.userId;
+
+  if (!targetUserId) {
+    return next(new ApiError(400, "target user id is required"));
+  }
+
+  if (
+    req.user.role === "admin" ||
+    req.user.role === "manager" ||
+    req.user.id === targetUserId
+  ) {
+    return next();
+  }
+
+  return next(new ApiError(403, "you can only access your own data"));
 };
