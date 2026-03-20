@@ -1,5 +1,6 @@
 import {
   createUserService,
+  getAllUsersServices,
   resetPasswordService,
   userDeleteServices,
   userSigninServices,
@@ -110,3 +111,20 @@ export const resetPassword = async (
     next(err);
   }
 };
+
+
+export const getAllUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userProfiles = await getAllUsersServices();
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "all user fetched succesfully", userProfiles))
+  }
+  catch (err) {
+    next(err);
+  }
+}

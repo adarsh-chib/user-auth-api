@@ -1,6 +1,6 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 
-export const requestLoggger = (
+export const requestLogger = (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -11,4 +11,5 @@ export const requestLoggger = (
 
   next();
 };
+
 

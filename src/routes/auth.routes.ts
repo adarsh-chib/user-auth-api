@@ -1,6 +1,7 @@
 import express, { Router } from "express";
 import {
   createUser,
+  getAllUser,
   resetPassword,
   updateUser,
   userDelete,
@@ -15,8 +16,15 @@ import { resetPasswordValidator, signinValidator, signupValidator } from "../val
 
 const router = express.Router();
 
+
+
 router.post("/auth/signup", signupValidator, validate, createUser);
 router.post("/auth/signin", signinValidator, validate, userSignin);
+router.get(
+  "/auth/users/:email",
+  authenticationMiddleware,
+  adminOrOwnerByEmailMiddleware,
+ getAllUser)
 router.patch(
   "/auth/update/:email",
   authenticationMiddleware,
@@ -29,6 +37,6 @@ router.delete(
   adminOrOwnerByEmailMiddleware,
   userDelete,
 );
-router.patch("/auth/reset-password",resetPasswordValidator, validate, resetPassword);
+router.patch("/auth/reset-password", resetPasswordValidator, validate, resetPassword);
 
 export default router;

@@ -13,7 +13,7 @@ export const createUserService = async (
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
-    throw new ApiError(404,"user already existed");
+    throw new ApiError(404, "user already existed");
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -34,12 +34,12 @@ export const userSigninServices = async (email: string, password: string) => {
   const existing_user = await User.findOne({ email });
 
   if (!existing_user) {
-    throw new ApiError(404,"invalid email and password");
+    throw new ApiError(404, "invalid email and password");
   }
   const isUserMatch = await bcrypt.compare(password, existing_user.password);
 
   if (!isUserMatch) {
-    throw new ApiError(404,"invalid email and password");
+    throw new ApiError(404, "invalid email and password");
   }
 
   const payload = {
@@ -74,7 +74,7 @@ export const userUpdateService = async (
   const userFind = await User.findOne({ email });
 
   if (!userFind) {
-    throw new ApiError(404,"email does not exist");
+    throw new ApiError(404, "email does not exist");
   }
 
   const userUpdate = await User.findOneAndUpdate({ email }, update);
@@ -84,35 +84,35 @@ export const userUpdateService = async (
   return updateData;
 };
 
-export const userDeleteServices = async (email : string)=>{
-  
-  const findUser = await User.findOne({email})
+export const userDeleteServices = async (email: string) => {
 
-  if(!findUser){
+  const findUser = await User.findOne({ email })
+
+  if (!findUser) {
     throw new ApiError(404, 'email does not exist')
   }
 
-  const deleteUser = await User.findOneAndDelete({email});
+  const deleteUser = await User.findOneAndDelete({ email });
   return deleteUser;
 }
 
 
-export const resetPasswordService = async (email : string, newpassword : string)=>{
-  const findUser = await User.findOne({email});
+export const resetPasswordService = async (email: string, newpassword: string) => {
+  const findUser = await User.findOne({ email });
 
-  if(!findUser){
-    throw new ApiError (404, 'user does not exists');
+  if (!findUser) {
+    throw new ApiError(404, 'user does not exists');
   }
 
   const hashedPassword = await bcrypt.hash(newpassword, 10);
 
   const updateUser = await User.findOneAndUpdate(
-    {email},
-    {password : hashedPassword},
+    { email },
+    { password: hashedPassword },
   );
 
   if (!updateUser) {
-    throw new ApiError(404,"user does not exists");
+    throw new ApiError(404, "user does not exists");
   }
 
   const userObject = updateUser.toObject();
@@ -120,4 +120,14 @@ export const resetPasswordService = async (email : string, newpassword : string)
 
   return userObject;
 
+}
+
+export const getAllUsersServices = async () => {
+  const userdata = await User.find().select("-password");
+
+  if (!userdata) {
+    throw new ApiError(404, "user not found");
+  }
+
+  return userdata
 }

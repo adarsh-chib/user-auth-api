@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import "dotenv/config";
 import { connectDB } from "./config/db";
 import {
-  requestLoggger,
+  requestLogger,
 } from "./middleware/global.middleware";
 import router from "./routes/auth.routes";
 import cors from "cors";
@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 2000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(requestLoggger);
+app.use(requestLogger);
 
 
 app.use("/api", router);

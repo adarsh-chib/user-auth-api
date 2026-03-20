@@ -49,15 +49,15 @@ export const updateProfileServices = async (
   }
 
   const userProfileUpdate = await UserProfile.findOneAndUpdate(
-    {userId},
+    { userId },
     profileData,
-    {returnDocument : "after"}
+    { returnDocument: "after" }
   );
 
   if (!userProfileUpdate) {
     throw new ApiError(404, "profile not found");
   }
-  
+
 
   return userProfileUpdate;
 };
@@ -65,13 +65,20 @@ export const updateProfileServices = async (
 
 
 export const deleteProfileServices = async (userId: string) => {
-  const userFind = await UserProfile.findOne({userId});
+  const userFind = await UserProfile.findOne({ userId });
 
-  if(!userFind){
+  if (!userFind) {
     throw new ApiError(400, "profile not found")
   }
 
-  const userProfileDelete = await UserProfile.findOneAndDelete({userId})
+  const userProfileDelete = await UserProfile.findOneAndDelete({ userId })
 
   return userProfileDelete;
+}
+
+
+export const getAllUserProfileServices = async () => {
+  const userFind = await UserProfile.find().select("-password").populate("userId", "name email role")
+
+  return userFind;
 }

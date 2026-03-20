@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import {
   createProfileService,
   deleteProfileServices,
+  getAllUserProfileServices,
   getProfileServices,
   updateProfileServices,
 } from "../services/profile.services";
@@ -103,3 +104,21 @@ export const profileDelete = async (
     next(err);
   }
 };
+
+
+export const getAllUserProfile = async(
+  req : Request,
+  res : Response,
+  next : NextFunction,
+)=>{
+
+  try{
+    const userProfiles = await getAllUserProfileServices()
+    return res
+    .status(200)
+    .json(new ApiResponse(200, "all user profile fetched successfull",userProfiles))
+  }
+  catch(err){
+     next(err);
+  }
+}

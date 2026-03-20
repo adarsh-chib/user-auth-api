@@ -1,6 +1,7 @@
 import Express, { Router } from "express";
 import {
   createProfile,
+  getAllUserProfile,
   getProfile,
   profileDelete,
   profileUpdate,
@@ -27,6 +28,13 @@ profileRouter.get(
   adminOrOwnerByUserIdMiddleware,
   getProfile,
 );
+
+profileRouter.get(
+  "/profile/users/:userId",
+  authenticationMiddleware,
+  adminOrOwnerByUserIdMiddleware,
+  getAllUserProfile)
+
 profileRouter.patch(
   "/profile/update/:userId",
   authenticationMiddleware,
