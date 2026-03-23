@@ -1,4 +1,5 @@
 import {
+  assignUserToManagerService,
   createUserService,
   getAllUsersServices,
   resetPasswordService,
@@ -8,6 +9,7 @@ import {
 } from "../services/auth.service";
 import { NextFunction, Request, Response } from "express";
 import { ApiResponse } from "../utils/api.response";
+import { ApiError } from "../utils/api.error";
 
 export const createUser = async (
   req: Request,
@@ -20,7 +22,9 @@ export const createUser = async (
     const user = await createUserService(name, email, password, role);
     return res
       .status(201)
-      .json(new ApiResponse(201, `New user ${user.name} has been created`, user));
+      .json(
+        new ApiResponse(201, `New user ${user.name} has been created`, user),
+      );
   } catch (err) {
     next(err);
   }
@@ -88,7 +92,9 @@ export const userDelete = async (
     const userDeleted = await userDeleteServices(email);
     return res
       .status(200)
-      .json(new ApiResponse(200, `user ${email} has been deleted`, userDeleted));
+      .json(
+        new ApiResponse(200, `user ${email} has been deleted`, userDeleted),
+      );
   } catch (err) {
     next(err);
   }
@@ -112,7 +118,6 @@ export const resetPassword = async (
   }
 };
 
-
 export const getAllUser = async (
   req: Request,
   res: Response,
@@ -122,9 +127,37 @@ export const getAllUser = async (
     const userProfiles = await getAllUsersServices();
     return res
       .status(200)
-      .json(new ApiResponse(200, "all user fetched succesfully", userProfiles))
-  }
-  catch (err) {
+      .json(new ApiResponse(200, "all user fetched succesfully", userProfiles));
+  } catch (err) {
     next(err);
   }
-}
+};
+
+export const assignUserToManager = async (
+  req: Request<{ userId: string }, {}, { managerId: string }>,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { userId } = req.params;
+  const { managerId } = req.body;
+
+  if (!managerId) {
+    return next(new ApiError(400, "manager id is required"));
+  }
+
+  try {
+    const updatedData = await assignUserToManagerService(userId, managerId);
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          `user ${updatedData.user.name} assigned to manager ${updatedData.manager.name} successfully`,
+          updatedData,
+        ),
+      );
+  } catch (err) {
+    next(err);
+  }
+};

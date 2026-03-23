@@ -1,5 +1,6 @@
 import express, { Router } from "express";
 import {
+  assignUserToManager,
   createUser,
   getAllUser,
   resetPassword,
@@ -8,35 +9,57 @@ import {
   userSignin,
 } from "../controller/auth.controller";
 import {
-  adminOrOwnerByEmailMiddleware,
   authenticationMiddleware,
+  authorizationMiddleware,
 } from "../middleware/auth.middleware";
 import { validate } from "../middleware/validation.middleware";
-import { resetPasswordValidator, signinValidator, signupValidator } from "../validators/auth.validator";
+import {
+  resetPasswordValidator,
+  signinValidator,
+  signupValidator,
+} from "../validators/auth.validator";
 
 const router = express.Router();
 
-
-
-router.post("/auth/signup", signupValidator, validate, createUser);
+router.post(
+  "/auth/signup",
+  signupValidator,
+  validate,
+  authenticationMiddleware,
+  authorizationMiddleware("admin"),
+  createUser,
+);
 router.post("/auth/signin", signinValidator, validate, userSignin);
 router.get(
-  "/auth/users/:email",
+  "/auth/users",
   authenticationMiddleware,
-  adminOrOwnerByEmailMiddleware,
- getAllUser)
+  authorizationMiddleware("admin"),
+  getAllUser,
+);
 router.patch(
   "/auth/update/:email",
   authenticationMiddleware,
-  adminOrOwnerByEmailMiddleware,
+  resetPasswordValidator,
+  validate,
   updateUser,
 );
 router.delete(
   "/auth/delete/:email",
   authenticationMiddleware,
-  adminOrOwnerByEmailMiddleware,
+  authorizationMiddleware("admin"),
   userDelete,
 );
-router.patch("/auth/reset-password", resetPasswordValidator, validate, resetPassword);
+router.patch(
+  "/auth/reset-password",
+  resetPasswordValidator,
+  validate,
+  resetPassword,
+);
+router.patch(
+  "/auth/assign-user/:userId",
+  authenticationMiddleware,
+  authorizationMiddleware("admin"),
+  assignUserToManager,
+);
 
 export default router;

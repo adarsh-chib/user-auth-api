@@ -3,6 +3,7 @@ import { User } from "../models/users.model";
 import { generateRefreshToken } from "../utils/generaterefreshtoken";
 import { generateAccessToken } from "../utils/generateaccesstoken";
 import { ApiError } from "../utils/api.error";
+import mongoose from "mongoose";
 
 export const createUserService = async (
   name: string,
@@ -85,23 +86,24 @@ export const userUpdateService = async (
 };
 
 export const userDeleteServices = async (email: string) => {
-
-  const findUser = await User.findOne({ email })
+  const findUser = await User.findOne({ email });
 
   if (!findUser) {
-    throw new ApiError(404, 'email does not exist')
+    throw new ApiError(404, "email does not exist");
   }
 
   const deleteUser = await User.findOneAndDelete({ email });
   return deleteUser;
-}
+};
 
-
-export const resetPasswordService = async (email: string, newpassword: string) => {
+export const resetPasswordService = async (
+  email: string,
+  newpassword: string,
+) => {
   const findUser = await User.findOne({ email });
 
   if (!findUser) {
-    throw new ApiError(404, 'user does not exists');
+    throw new ApiError(404, "user does not exists");
   }
 
   const hashedPassword = await bcrypt.hash(newpassword, 10);
@@ -119,8 +121,7 @@ export const resetPasswordService = async (email: string, newpassword: string) =
   delete userObject.password;
 
   return userObject;
-
-}
+};
 
 export const getAllUsersServices = async () => {
   const userdata = await User.find().select("-password");
@@ -129,5 +130,41 @@ export const getAllUsersServices = async () => {
     throw new ApiError(404, "user not found");
   }
 
-  return userdata
-}
+  return userdata;
+};
+
+export const assignUserToManagerService = async (
+  userID: string,
+  managerId: string,
+) => {
+  const user = await User.findById(userID);
+  if (!user) {
+    throw new ApiError(404, "user not found");
+  }
+  if (user.role !== "user") {
+    throw new ApiError(404, "only user can be assigned to manager");
+  }
+
+  const manager = await User.findById(managerId);
+  if (!manager) {
+    throw new ApiError(404, "manager not found");
+  }
+  if (manager.role !== "manager") {
+    throw new ApiError(400, "assigned person must have the manager role");
+  }
+  user.assignedTo = new mongoose.Types.ObjectId(managerId);
+  await user.save();
+
+  const userObject = user.toObject();
+  delete userObject.password;
+
+  const managerObject = manager.toObject();
+  delete managerObject.password;
+  delete managerObject.assignedTo;
+
+  return {
+    user: userObject,
+    manager: managerObject,
+  };
+
+};

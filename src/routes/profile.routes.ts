@@ -9,8 +9,8 @@ import {
 import { createProfileValidator } from "../validators/profile.validator";
 import { validate } from "../middleware/validation.middleware";
 import {
-  adminOrOwnerByUserIdMiddleware,
   authenticationMiddleware,
+  authorizationMiddleware,
 } from "../middleware/auth.middleware";
 
 const profileRouter = Express.Router();
@@ -18,6 +18,7 @@ const profileRouter = Express.Router();
 profileRouter.post(
   "/profile/create",
   authenticationMiddleware,
+  authorizationMiddleware("admin"),
   createProfileValidator,
   validate,
   createProfile,
@@ -25,20 +26,21 @@ profileRouter.post(
 profileRouter.get(
   "/profile/find/:userId",
   authenticationMiddleware,
-  adminOrOwnerByUserIdMiddleware,
+  authorizationMiddleware("admin"),
   getProfile,
 );
 
 profileRouter.get(
-  "/profile/users/:userId",
+  "/profile/users",
   authenticationMiddleware,
-  adminOrOwnerByUserIdMiddleware,
-  getAllUserProfile)
+  authorizationMiddleware("admin"),
+  getAllUserProfile,
+);
 
 profileRouter.patch(
-  "/profile/update/:userId",
+  "/profile/update",
   authenticationMiddleware,
-  adminOrOwnerByUserIdMiddleware,
+  authorizationMiddleware("admin","manager","user"),
   createProfileValidator,
   validate,
   profileUpdate,
@@ -46,7 +48,7 @@ profileRouter.patch(
 profileRouter.delete(
   "/profile/delete/:userId",
   authenticationMiddleware,
-  adminOrOwnerByUserIdMiddleware,
+  authorizationMiddleware("admin"),
   profileDelete,
 );
 

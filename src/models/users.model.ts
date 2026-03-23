@@ -21,6 +21,11 @@ export const userSchema = new Schema({
     required : [ true, "password is required"],
     unique : true,
 
+  },
+  assignedTo: {
+    type : mongoose.Schema.Types.ObjectId,
+    ref : "User",
+    default: null,
   }
 });
 

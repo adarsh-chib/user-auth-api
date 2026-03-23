@@ -1,14 +1,12 @@
 import express, { Router } from "express";
-import mongoose from "mongoose";
 import "dotenv/config";
 import { connectDB } from "./config/db";
-import {
-  requestLogger,
-} from "./middleware/global.middleware";
+import { requestLogger } from "./middleware/global.middleware";
 import router from "./routes/auth.routes";
 import cors from "cors";
 import { errorHandler } from "./middleware/error.handler";
 import profileRouter from "./routes/profile.routes";
+import bookRouter from "./routes/book.routes";
 
 const app = express();
 const corsOptions = {
@@ -23,10 +21,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(requestLogger);
-
+app.use("/uploads", express.static("uploads"));
 
 app.use("/api", router);
-app.use("/api",profileRouter);
+app.use("/api", profileRouter);
+app.use("/api", bookRouter);
+
 app.use(errorHandler);
 
 const server = async () => {

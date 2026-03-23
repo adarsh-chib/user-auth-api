@@ -1,7 +1,6 @@
 /node_modules
 .env
 /build
-src/config/db.ts
-src/config/jwt.ts
+/uploads
 
 
