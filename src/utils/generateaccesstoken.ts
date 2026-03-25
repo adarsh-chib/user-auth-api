@@ -6,3 +6,17 @@ export const generateAccessToken = (payload : object)=>{
         expiresIn : ACCESS_TOKEN_EXPRESS_IN
       });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
