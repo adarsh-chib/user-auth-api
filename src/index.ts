@@ -7,8 +7,11 @@ import cors from "cors";
 import { errorHandler } from "./middleware/error.handler";
 import profileRouter from "./routes/profile.routes";
 import bookRouter from "./routes/book.routes";
+import helmet from "helmet";
+import { apiLimiter } from "./middleware/ratelimiter";
 
 const app = express();
+app.use(helmet());
 const corsOptions = {
   origin: "http://localhost:4000", // Replace with your exact frontend URL
 };
@@ -18,10 +21,12 @@ app.use(cors(corsOptions));
 const PORT = process.env.PORT || 2000;
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })); 
 
 app.use(requestLogger);
-app.use("/uploads", express.static("uploads"));
+
+app.use("/api",apiLimiter);
+app.use("/uploads", express.static("uploads"));   // it used to let the saved files open by url
 
 app.use("/api", router);
 app.use("/api", profileRouter);

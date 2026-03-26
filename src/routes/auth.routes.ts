@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import express, { NextFunction, Request, Response, Router } from "express";
 import {
   assignUserToManager,
   createUser,
@@ -17,19 +17,19 @@ import {
   resetPasswordValidator,
   signinValidator,
   signupValidator,
+  updateValidator,
 } from "../validators/auth.validator";
 
 const router = express.Router();
 
 router.post(
   "/auth/signup",
-  signupValidator,
-  validate,
+  validate(signupValidator),
   authenticationMiddleware,
   authorizationMiddleware("admin"),
   createUser,
 );
-router.post("/auth/signin", signinValidator, validate, userSignin);
+router.post("/auth/signin", validate(signinValidator), userSignin);
 router.get(
   "/auth/users",
   authenticationMiddleware,
@@ -39,8 +39,7 @@ router.get(
 router.patch(
   "/auth/update/:email",
   authenticationMiddleware,
-  resetPasswordValidator,
-  validate,
+  validate(updateValidator),
   updateUser,
 );
 router.delete(
@@ -51,8 +50,7 @@ router.delete(
 );
 router.patch(
   "/auth/reset-password",
-  resetPasswordValidator,
-  validate,
+  validate(resetPasswordValidator),
   resetPassword,
 );
 router.patch(

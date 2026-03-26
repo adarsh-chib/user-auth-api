@@ -12,7 +12,7 @@ export const connectDB = async() =>{
 
     }
 
-    catch{
-        console.error('database has been not connected');
+    catch (error) {
+        console.error('database has been not connected:', error);
     }
-}
+}

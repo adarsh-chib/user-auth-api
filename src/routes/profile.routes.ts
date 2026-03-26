@@ -6,12 +6,12 @@ import {
   profileDelete,
   profileUpdate,
 } from "../controller/profile.controller";
-import { createProfileValidator } from "../validators/profile.validator";
 import { validate } from "../middleware/validation.middleware";
 import {
   authenticationMiddleware,
   authorizationMiddleware,
 } from "../middleware/auth.middleware";
+import { createProfileValidator } from "../validators/profile.validator";
 
 const profileRouter = Express.Router();
 
@@ -19,8 +19,7 @@ profileRouter.post(
   "/profile/create",
   authenticationMiddleware,
   authorizationMiddleware("admin"),
-  createProfileValidator,
-  validate,
+  validate(createProfileValidator),
   createProfile,
 );
 profileRouter.get(
@@ -41,8 +40,7 @@ profileRouter.patch(
   "/profile/update",
   authenticationMiddleware,
   authorizationMiddleware("admin","manager","user"),
-  createProfileValidator,
-  validate,
+  validate(createProfileValidator),
   profileUpdate,
 );
 profileRouter.delete(
