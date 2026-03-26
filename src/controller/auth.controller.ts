@@ -123,8 +123,13 @@ export const getAllUser = async (
   res: Response,
   next: NextFunction,
 ) => {
+  
+  
+  const page = req.query.page? parseInt(req.query.page as string) : undefined;
+  const limit = req.query.limit? parseInt(req.query.limit as string) : undefined;
+  const name = req.query.name as string;
   try {
-    const userProfiles = await getAllUsersServices();
+    const userProfiles = await getAllUsersServices(page, limit, name);
     return res
       .status(200)
       .json(new ApiResponse(200, "all user fetched succesfully", userProfiles));

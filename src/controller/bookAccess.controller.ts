@@ -2,9 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import { ApiError } from "../utils/api.error";
 import { ApiResponse } from "../utils/api.response";
 import {
-  BookToUserServices,
+  AssignBookToUserServices,
   getAssignBookByIdService,
   getBooksServices,
+  revokeBookToUserServices,
 } from "../services/bookAccess.service";
 
 export const assignBookToUser = async (
@@ -19,11 +20,17 @@ export const assignBookToUser = async (
   }
 
   try {
-    const access = await BookToUserServices(bookId, req.user.id, userId);
+    const access: any = await AssignBookToUserServices(bookId, req.user.id, userId);
 
     return res
       .status(201)
-      .json(new ApiResponse(201, "book assigned successfully", access));
+      .json(
+        new ApiResponse(
+          201,
+          `Manager ${access.managerId.name} assigned "${access.bookId.title}" to ${access.userId.name} successfully`,
+          access
+        )
+      );
   } catch (err) {
     next(err);
   }
@@ -68,4 +75,30 @@ export const getAssignBookById = async(
    catch(err){
     next(err);
    }
+}
+
+
+export const revokeBookTouser = async(
+  req : Request <{ bookId: string; userId: string }>,
+  res : Response,
+  next : NextFunction,
+)=>{
+   const {bookId, userId} = req.params;
+
+   if(!req.user){
+    throw new ApiError(404, "unauthorized")
+   }
+   
+   try{
+      const revokeBook = await revokeBookToUserServices(bookId, req.user.id, userId)
+
+      return res.status(200)
+      .json(
+        new ApiResponse(200, "ok", revokeBook)
+      )
+   }
+   catch(err){
+    next(err);
+   }
+   
 }

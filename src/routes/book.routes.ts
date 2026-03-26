@@ -5,7 +5,7 @@ import {
 } from "../middleware/auth.middleware";
 import { upload } from "../middleware/upload.middleware";
 import { createBook, getAllBooks } from "../controller/book.controller";
-import { assignBookToUser, getAssignBookById, getbooks } from "../controller/bookAccess.controller";
+import { assignBookToUser, getAssignBookById, getbooks, revokeBookTouser } from "../controller/bookAccess.controller";
 
 const bookRouter = Express.Router();
 
@@ -31,11 +31,18 @@ bookRouter.post(
   assignBookToUser,
 );
 
+bookRouter.post(
+  "/books/:bookId/revoke/:userId",
+  authenticationMiddleware,
+  authorizationMiddleware("admin", "manager"),
+  revokeBookTouser,
+);
+
 bookRouter.get(
   "/books/assign/:id",
   authenticationMiddleware,
   authorizationMiddleware("admin", "manager"),
-  getbooks,
+  getbooks,    // here we can check the assigned books by manager as well as to user
 );
 
 bookRouter.get(

@@ -26,4 +26,8 @@ const bookAccessSchema = new Schema(
   { timestamps: true }
 );
 
+bookAccessSchema.index({bookId : 1});
+bookAccessSchema.index({userId : 1});
+bookAccessSchema.index({managerId : 1});
+
 export const BookAccess = mongoose.model("BookAccess", bookAccessSchema);

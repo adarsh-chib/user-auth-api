@@ -123,14 +123,34 @@ export const resetPasswordService = async (
   return userObject;
 };
 
-export const getAllUsersServices = async () => {
-  const userdata = await User.find().select("-password");
+export const getAllUsersServices = async (
+  page? : number,
+  limit? : number,
+  name? : string
+) => {
+  
+  const filter: any = {};
 
-  if (!userdata) {
+  if(name){
+    filter.name = { $regex : name,
+      $options : "i"
+    };
+  }
+
+  let query = User.find(filter).select("-password")
+
+  if(page && limit){
+     const skip = (page - 1) * limit 
+    query = query.skip(skip).limit(limit);
+  }
+
+  const userData = await query;
+ 
+  if (!userData || userData.length === 0) {
     throw new ApiError(404, "user not found");
   }
 
-  return userdata;
+  return userData;
 };
 
 export const assignUserToManagerService = async (
