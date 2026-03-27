@@ -1,6 +1,7 @@
 import z from "zod";
 
 export const signupValidator = z.object({
+  profileImage: z.string().url().optional(),
   name: z
     .string()
     .min(2, "name must be required")
@@ -15,10 +16,10 @@ export const signupValidator = z.object({
   password: z
     .string()
     .min(6, "password must be at least 6 characters")
-    .regex(/[a-z]/, "must contain at least one lowercase letter")
-    .regex(/[A-Z]/, "must contain at least one uppercase letter")
-    .regex(/[0-9]/, "must contain at least one number"),
-
+    // .regex(/[a-z]/, "must contain at least one lowercase letter")
+    // .regex(/[A-Z]/, "must contain at least one uppercase letter")
+    // .regex(/[0-9]/, "must contain at least one number"),
+  ,
   role: z.string().refine((val) => ["user", "admin", "manager"].includes(val), {
     message: "role must be admin user or manager",
   }),

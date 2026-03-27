@@ -10,6 +10,8 @@ import {
 import { NextFunction, Request, Response } from "express";
 import { ApiResponse } from "../utils/api.response";
 import { ApiError } from "../utils/api.error";
+import cloudinary from "../config/cloudinary";
+import fs from "fs/promises";
 
 export const createUser = async (
   req: Request,
@@ -19,7 +21,23 @@ export const createUser = async (
   const { name, email, password, role } = req.body;
 
   try {
-    const user = await createUserService(name, email, password, role);
+    let profileImageUrl: string | undefined;
+
+    if (req.file) {
+      const uploadResult = await new Promise<any>((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "profileImage", resource_type: "image" },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          },
+        );
+        stream.end(req.file!.buffer);
+      });
+      profileImageUrl = uploadResult.secure_url;
+    }
+
+    const user = await createUserService(profileImageUrl, name, email, password, role);
     return res
       .status(201)
       .json(

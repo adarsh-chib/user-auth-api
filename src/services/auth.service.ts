@@ -6,6 +6,7 @@ import { ApiError } from "../utils/api.error";
 import mongoose from "mongoose";
 
 export const createUserService = async (
+  profileImage : string,
   name: string,
   email: string,
   password: string,
@@ -19,6 +20,7 @@ export const createUserService = async (
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = await User.create({
+    profileImage,
     name,
 
     email,

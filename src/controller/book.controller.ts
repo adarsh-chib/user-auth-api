@@ -5,6 +5,9 @@ import {
   getAllBooksService,
 } from "../services/book.services";
 import { ApiResponse } from "../utils/api.response";
+import cloudinary from "../config/cloudinary";
+import fs from "fs/promises";
+
 
 export const createBook = async (
   req: Request,
@@ -31,7 +34,13 @@ export const createBook = async (
   }
 
   try {
-    const pdfUrl = `/${req.file.path.replace(/\\/g, "/")}`;
+    const uploadedPdf = await cloudinary.uploader.upload(req.file.path, {
+      folder: "books",
+      resource_type: "raw",    // raw because we are uploading the pdf
+    });
+
+    const pdfUrl = uploadedPdf.secure_url;       //for cloudinary
+    await fs.unlink(req.file.path);              //fs.unlink used to remove the files from the local folder
 
     const book = await createBookService({
       title,

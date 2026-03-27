@@ -2,6 +2,7 @@ import express from 'express'
 import mongoose, { Schema } from 'mongoose'
 
 export const userSchema = new Schema({
+  profileImage : {type : String, required : false},
   name: { type: String, required: true, trim: true, minlength: 2 },
   email: {
     type: String,

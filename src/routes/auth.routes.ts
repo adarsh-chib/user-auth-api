@@ -19,14 +19,17 @@ import {
   signupValidator,
   updateValidator,
 } from "../validators/auth.validator";
+import { profileUpload } from "../middleware/upload.middleware";
 
 const router = express.Router();
 
 router.post(
   "/auth/signup",
-  validate(signupValidator),
   authenticationMiddleware,
   authorizationMiddleware("admin"),
+  profileUpload.single("profileImage"),
+  
+  validate(signupValidator),
   createUser,
 );
 router.post("/auth/signin", validate(signinValidator), userSignin);
