@@ -19,6 +19,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(requestLogger);
+app.get("/" , (req , res) =>{
+    res.status(200).json({
+        status : 200,
+        message : "server is running successfully"
+    })
+});
 
 app.use("/api", apiLimiter);
 app.use("/uploads", express.static("uploads"));
