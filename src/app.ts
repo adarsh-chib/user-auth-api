@@ -8,6 +8,8 @@ import profileRouter from "./routes/profile.routes";
 import bookRouter from "./routes/book.routes";
 import helmet from "helmet";
 import { apiLimiter } from "./middleware/ratelimiter";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./config/swagger";
 
 const app = express();
 app.use(helmet());
@@ -25,6 +27,13 @@ app.get("/" , (req , res) =>{
         message : "server is running successfully"
     })
 });
+
+app.get("/api-docs.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerDocument);
+});
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use("/api", apiLimiter);
 app.use("/uploads", express.static("uploads"));
