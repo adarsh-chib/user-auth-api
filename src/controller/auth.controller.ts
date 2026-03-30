@@ -11,7 +11,6 @@ import { NextFunction, Request, Response } from "express";
 import { ApiResponse } from "../utils/api.response";
 import { ApiError } from "../utils/api.error";
 import cloudinary from "../config/cloudinary";
-import fs from "fs/promises";
 
 export const createUser = async (
   req: Request,
@@ -25,7 +24,7 @@ export const createUser = async (
 
     if (req.file) {
       const uploadResult = await new Promise<any>((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
+        const stream = cloudinary.uploader.upload_stream(                          //comes from claudinary
           { folder: "profileImage", resource_type: "image" },
           (error, result) => {
             if (error) return reject(error);
