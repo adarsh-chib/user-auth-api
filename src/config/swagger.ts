@@ -6,11 +6,15 @@ const swaggerDocument = {
     description: "Swagger documentation for the authentication, profile, and book management APIs.",
   },
   servers: [
-    {
-      url: "http://localhost:2000",
-      description: "Local development server",
-    },
-  ],
+  {
+    url: "http://localhost:2000",
+    description: "Local server"
+  },
+  {
+    url: "https://user-auth-api-black.vercel.app",
+    description: "Production server"
+  }
+],
   tags: [
     { name: "Health", description: "Health and status endpoints" },
     { name: "Auth", description: "Authentication and user management" },
