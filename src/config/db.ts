@@ -15,5 +15,6 @@ export const connectDB = async() =>{
 
     catch (error) {
         logger.error('database has been not connected:', error);
+        throw error;
     }
 }
