@@ -18,7 +18,9 @@ const server = async () => {
   catch(error){
     logger.error("server startup failed", error)
     process.exit(1);
+
   }
 };
 
 server();
+
